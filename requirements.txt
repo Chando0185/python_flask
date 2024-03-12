@@ -1,4 +1,4 @@
-Flask==2.0.2
-opencv-python==4.5.3.56
-firebase-admin==5.2.1
+Flask
+opencv-python
+firebase-admin
 Gunicorn
