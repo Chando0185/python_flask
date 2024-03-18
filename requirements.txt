@@ -2,3 +2,4 @@ Flask
 opencv-python
 firebase-admin
 Gunicorn
+api.video
