@@ -96,7 +96,7 @@ database = db.reference()
 import uuid
 # Video capture function
 def capture_video(name, telephone, address):
-    cap = cv2.VideoCapture()
+    cap = cv2.VideoCapture(0)
     codec = cv2.VideoWriter_fourcc(*'XVID')
     video_filename = str(uuid.uuid4()) + '.avi'
     out = cv2.VideoWriter(f'static/{video_filename}', codec, 20.0, (640, 480))
