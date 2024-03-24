@@ -3,6 +3,7 @@ import firebase_admin
 from firebase_admin import credentials, storage, db
 import os
 import secrets
+import datetime
 
 app = Flask(__name__)
 
@@ -15,15 +16,11 @@ firebase_admin.initialize_app(cred, {
 bucket = storage.bucket()
 ref = db.reference('users')
 
-
 from google.cloud import storage
-import datetime
 
 # Initialize Firebase Storage client
 storage_client = storage.Client.from_service_account_json("services.json")
 bucket = storage_client.bucket("facemexico-9f5e9.appspot.com")
-
-
 
 # Directory to store uploaded files
 UPLOAD_FOLDER = 'static'
@@ -36,7 +33,6 @@ def index():
     videos = ref.get()
     return render_template('index.html', videos=videos)
 
-
 @app.route('/upload', methods=['POST'])
 def upload():
     if 'file' not in request.files:
@@ -46,8 +42,8 @@ def upload():
         return 'No selected file'
 
     # Check if file is of type video/mp4
-    if file.mimetype != 'video/mp4':
-        return 'Only video files of type mp4 are allowed'
+    if not file.mimetype.startswith('video/'):
+        return 'Only video files are allowed'
 
     # Save video file to local directory
     filename = secrets.token_hex(8) + '_' + file.filename
@@ -83,6 +79,13 @@ def upload():
 
     return redirect(url_for('index'))
 
+@app.route('/generate_signed_url/<filename>')
+def generate_signed_url(filename):
+    blob = bucket.blob(filename)
+    expiration = datetime.timedelta(hours=1)
+    signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
+    print(signed_url)
+    return signed_url
 
 if __name__ == '__main__':
     app.run(debug=True)
