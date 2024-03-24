@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, send_file
 import firebase_admin
 from firebase_admin import credentials, storage, db
 import os
 import secrets
+import csv
 import datetime
 
 app = Flask(__name__)
@@ -84,8 +85,27 @@ def generate_signed_url(filename):
     blob = bucket.blob(filename)
     expiration = datetime.timedelta(hours=1)
     signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
-    print(signed_url)
     return signed_url
+
+@app.route('/export_csv')
+def export_csv():
+    ref = db.reference('users')
+    users_data = ref.get()
+
+    # Define CSV file path
+    csv_file_path = 'users_data.csv'
+
+    # Write data to CSV file
+    with open(csv_file_path, 'w', newline='') as csvfile:
+        fieldnames = ['Name', 'Telephone', 'Address']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for key, data in users_data.items():
+            writer.writerow({'Name': data['name'], 'Telephone': data['telephone'], 'Address': data['address']})
+
+    # Return the path to the generated CSV file for download
+    return send_file(csv_file_path, as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
