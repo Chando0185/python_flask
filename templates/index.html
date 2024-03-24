@@ -48,46 +48,26 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
                     {% for key, data in videos.items() %}
                     <tr>
                         <td>{{ data['name'] }}</td>
                         <td>{{ data['telephone'] }}</td>
                         <td>{{ data['address'] }}</td>
                         <td>
-                            <a class="btn btn-primary download-link" href="{{ url_for('generate_signed_url', filename=data['video_filename']) }}">Download</a>
+                            <a class="btn btn-primary download-link" href="{{ data['video_url'] }}" download>Download</a>
                         </td>
                     </tr>
                     {% endfor %}
                 </tbody>
-                
-                <script>
-                    // Add event listener to all download links
-                    const downloadLinks = document.querySelectorAll('.download-link');
-                    downloadLinks.forEach(link => {
-                        link.addEventListener('click', function(event) {
-                            event.preventDefault(); // Prevent the default link behavior
-                            
-                            // Get the download URL from the link's href attribute
-                            const downloadUrl = this.getAttribute('href');
-                            
-                            // Create a hidden anchor element to trigger the download
-                            const anchor = document.createElement('a');
-                            anchor.href = downloadUrl;
-                            anchor.download = ''; // Empty string to use the filename specified by the server
-                            anchor.style.display = 'none';
-                            document.body.appendChild(anchor);
-                            
-                            // Trigger the click event on the anchor element
-                            anchor.click();
-                            
-                            // Clean up
-                            document.body.removeChild(anchor);
-                        });
-                    });
-                </script>
-                
             </table>
         </div>
+    </div>
+
+    <div class="container mt-3">
+        <form action="{{ url_for('export_csv') }}" method="get">
+            <button type="submit" class="btn btn-primary">Export Data to CSV</button>
+        </form>
     </div>
 
     <script type="module">
