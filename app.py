@@ -65,11 +65,13 @@ def upload():
     name = request.form['name']
     telephone = request.form['telephone']
     address = request.form['address']
+    promotor = request.form['promotor']
 
     user_data = {
         'name': name,
         'telephone': telephone,
         'address': address,
+        'promotor': promotor,
         'video_filename': filename,
         'video_token': access_token,
         'video_url': video_url
@@ -86,6 +88,21 @@ def generate_signed_url(filename):
     expiration = datetime.timedelta(hours=1)
     signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
     return signed_url
+
+# Add this route to your Flask app to display all submitted videos
+@app.route('/submitted_videos')
+def submitted_videos():
+    ref = db.reference('users')
+    videos = ref.get()
+    if not videos:
+        videos = {}
+    return render_template('submitted_videos.html', videos=videos)
+
+@app.route('/promotor')
+def promotor():
+    # Get promotor from URL query parameter
+    promotor_name = request.args.get('name', '')  # Default to empty string if not provided
+    return render_template('index.html', promotor=promotor_name)
 
 @app.route('/export_csv')
 def export_csv():
