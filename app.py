@@ -59,7 +59,8 @@ def upload():
     access_token = secrets.token_hex(16)
 
     # Get download URL
-    video_url = blob.public_url
+    expiration = datetime.timedelta(hours=1)
+    signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
 
     # Save user information, video filename, and access token to Firebase Realtime Database
     name = request.form['name']
@@ -74,7 +75,7 @@ def upload():
         'promotor': promotor,
         'video_filename': filename,
         'video_token': access_token,
-        'video_url': video_url
+        'video_url': signed_url
     }
     ref.push(user_data)
 
