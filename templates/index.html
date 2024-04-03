@@ -5,92 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Promotor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Custom styles */
+        .custom-img {
+            width: 100%; /* Responsive width */
+            max-width: 400px; /* Max width but feel free to adjust */
+            height: auto; /* Maintain aspect ratio */
+            display: block; /* To enable margin auto to work */
+            margin: 20px auto; /* Center the image */
+        }
+        .form-container {
+            max-width: 600px; /* Adjust based on your preference */
+            margin: auto; /* Center the form */
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <img class="mt-5 mb-4" src="https://i.postimg.cc/PJ9hNhXq/Whats-App-Image-2024-03-22-at-3-08-04-AM.jpg">
+    <div class="container text-center">
+        <img class="mt-5 mb-4 custom-img" src="https://i.postimg.cc/PJ9hNhXq/Whats-App-Image-2024-03-22-at-3-08-04-AM.jpg">
         
-            <div class="col-md-6">
-                <form action="/upload" method="post" enctype="multipart/form-data">
-                    <div class="form-group">
-                        <label for="name">Name:</label>
-                        <input type="text" class="form-control" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="telephone">Telephone:</label>
-                        <input type="tel" class="form-control" id="telephone" name="telephone" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="address">Address:</label>
-                        <input type="text" class="form-control" id="address" name="address" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="file" class="form-label">Video File:</label>
-                        <input type="file" class="form-control" id="file" name="file" accept="video/*" required>
-                    </div>
-                    <br>
-                    <button type="submit" class="btn btn-success">Submit</button>
-                </form>
-            </div>
-        
-    </div>
+        <div class="form-container">
+            <form action="/upload" method="post" enctype="multipart/form-data">
+                
+                <div class="form-group mb-3">
+                    <label for="promotor">Promotor</label>
+                    <input type="text" class="form-control" id="promotor" name="promotor" value="{{ promotor }}" required>
+                </div>
 
-    <div class="container mt-5">
-        <h1 class="mb-4">Submitted Videos</h1>
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="thead-light">
-                    <tr>
-                        <th>Name</th>
-                        <th>Telephone</th>
-                        <th>Address</th>
-                        <th>Download Video</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    
-                    {% for key, data in videos.items() %}
-                    <tr>
-                        <td>{{ data['name'] }}</td>
-                        <td>{{ data['telephone'] }}</td>
-                        <td>{{ data['address'] }}</td>
-                        <td>
-                            <a class="btn btn-primary download-link" href="{{ data['video_url'] }}" download>Download</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+
+                <div class="form-group mb-3">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="telephone">Telephone</label>
+                    <input type="tel" class="form-control" id="telephone" name="telephone" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="address">Address</label>
+                    <input type="text" class="form-control" id="address" name="address" required>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="file" class="form-label">Video File</label>
+                    <input type="file" class="form-control" id="file" name="file" accept="video/*" required>
+                </div>
+                <button type="submit" class="btn btn-success">Submit</button>
+            </form>
+        </div>
+        <div class="mt-3">
+            <a href="{{ url_for('submitted_videos') }}" class="btn btn-info">View Submitted Videos</a>
         </div>
     </div>
-
-    <div class="container mt-3">
-        <form action="{{ url_for('export_csv') }}" method="get">
-            <button type="submit" class="btn btn-primary">Export Data to CSV</button>
-        </form>
-    </div>
-
-    <script type="module">
-        // Import the functions you need from the SDKs you need
-   
-            // Capture image from camera
-        const canvas = document.createElement('canvas');
-        const videoElement = document.getElementById('videoElement');
-        canvas.width = videoElement.videoWidth;
-        canvas.height = videoElement.videoHeight;
-        canvas.getContext('2d').drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-        const imageDataURL = canvas.toDataURL('image/jpeg');
-
-            
-
-        // Access camera on page load
-        navigator.mediaDevices.getUserMedia({ video: true })
-            .then(stream => {
-                videoElement.srcObject = stream;
-            })
-            .catch(error => {
-                console.error('Error accessing camera:', error);
-            });
-    </script>
 </body>
 </html>
