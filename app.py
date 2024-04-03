@@ -59,7 +59,7 @@ def upload():
     access_token = secrets.token_hex(16)
 
     # Get download URL
-    expiration = datetime.timedelta(hours=1)
+    expiration = datetime.timedelta(seconds=604800)
     signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
 
     # Save user information, video filename, and access token to Firebase Realtime Database
