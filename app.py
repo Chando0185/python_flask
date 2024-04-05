@@ -5,7 +5,7 @@ import os
 import secrets
 import csv
 import datetime
-
+from flask import jsonify
 app = Flask(__name__)
 
 # Initialize Firebase
@@ -36,6 +36,21 @@ def index():
 
 @app.route('/upload', methods=['POST'])
 def upload():
+    # Extract user information from the form
+    name = request.form['name']
+    telephone = request.form['telephone']
+    address = request.form['address']
+
+    # Check if user with the same name, telephone, and address already exists
+    existing_users = db.reference('users').order_by_child('name').equal_to(name).get()
+
+    if existing_users:
+        for user_key, user_data in existing_users.items():
+            if user_data.get('telephone') == telephone and user_data.get('address') == address:
+                # User with same name, telephone, and address already exists, show alert
+                return render_template('alert.html', message='User with the same name, telephone, and address already exists!'), 400
+
+    # If user doesn't exist, proceed with upload
     if 'file' not in request.files:
         return 'No file part'
     file = request.files['file']
@@ -63,9 +78,6 @@ def upload():
     signed_url = blob.generate_signed_url(expiration=expiration, version="v4")
 
     # Save user information, video filename, and access token to Firebase Realtime Database
-    name = request.form['name']
-    telephone = request.form['telephone']
-    address = request.form['address']
     promotor = request.form['promotor']
 
     user_data = {
@@ -124,6 +136,22 @@ def export_csv():
 
     # Return the path to the generated CSV file for download
     return send_file(csv_file_path, as_attachment=True)
+# Delete video and corresponding entry from Firebase
+# Delete video and corresponding entry from Firebase
+@app.route('/delete/<string:key>', methods=['POST'])
+def delete_video(key):
+    database = db.reference('users')
+    user_data = database.child(key).get()
 
+    # Delete video file from storage
+    filename = user_data.get('video_filename', None)
+    if filename:
+        blob = bucket.blob(filename)
+        blob.delete()
+
+    # Delete database entry
+    database.child(key).delete()
+
+    return redirect(url_for('submitted_videos'))
 if __name__ == '__main__':
     app.run(debug=True)
