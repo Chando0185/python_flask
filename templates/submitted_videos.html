@@ -19,6 +19,7 @@
                         <th>Address</th>
                         <th>Promotor</th>
                         <th>Download Video</th>
+                        <th>Delete</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -32,11 +33,16 @@
                             <td>
                                 <a class="btn btn-primary download-link" href="{{ data['video_url'] }}" download>Download</a>
                             </td>
+                            <td>
+                                <form action="{{ url_for('delete_video', key=key) }}" method="post">
+                                    <button type="submit" class="btn btn-danger">Delete</button>
+                                </form>
+                            </td>
                         </tr>
                         {% endfor %}
                     {% else %}
                         <tr>
-                            <td colspan="5">No videos submitted yet.</td>
+                            <td colspan="6">No videos submitted yet.</td>
                         </tr>
                     {% endif %}
                 </tbody>
